@@ -4,12 +4,20 @@ import '../../data/remote/api_response.dart';
 import '../../models/news_api.dart';
 
 class NewsVM extends GetxController {
-  final userRepo = NewsRepoImpl();
-  ApiResponse<NewsApi> users = ApiResponse.loading();
-  List<Datum> newsList = List.empty(growable: true);
+  final newsRepo = NewsRepoImpl();
+  ApiResponse<NewsApi> news = ApiResponse.loading();
+  List<Datum> techNewsList = List.empty(growable: true);
+  List<Datum> scienceNewsList = List.empty(growable: true);
+  List<Datum> healthNewsList = List.empty(growable: true);
+  List<Datum> etNewsList = List.empty(growable: true);
+  List<Datum> sportsNewsList = List.empty(growable: true);
 
-  void onNewsLoaded(ApiResponse<NewsApi> response) {
-    newsList.addAll(response.data!.data);
+  void onNewsLoaded(ApiResponse<NewsApi> response, List<Datum> newslist) {
+    newslist.addAll(response.data!.data);
+    // scienceNewsList.addAll(response.data!.data);
+    // healthNewsList.addAll(response.data!.data);
+    // etNewsList.addAll(response.data!.data);
+    // sportsNewsList.addAll(response.data!.data);
     update();
   }
 
@@ -17,17 +25,41 @@ class NewsVM extends GetxController {
   // locator<NavigationService>().openDialog(newsList[index]);
   // }
 
-  void fetchUsers() async {
+  void fetchNews() async {
     //onUsersLoaded(ApiResponse.loading());
-    userRepo
-        .getNewsFromRepo()
-        .then((value) => onNewsLoaded(ApiResponse.completed(value)))
+    newsRepo
+        .getTechNewsFromRepo()
+        .then(
+            (value) => onNewsLoaded(ApiResponse.completed(value), techNewsList))
         .onError((error, stackTrace) =>
-            onNewsLoaded(ApiResponse.error("Unable to Fetch")));
+            onNewsLoaded(ApiResponse.error("Unable to Fetch"), techNewsList));
+    newsRepo
+        .getScienceNewsFromRepo()
+        .then((value) =>
+            onNewsLoaded(ApiResponse.completed(value), scienceNewsList))
+        .onError((error, stackTrace) =>
+            onNewsLoaded(ApiResponse.error("Unable to Fetch"), techNewsList));
+    newsRepo
+        .getHealthNewsFromRepo()
+        .then((value) =>
+            onNewsLoaded(ApiResponse.completed(value), healthNewsList))
+        .onError((error, stackTrace) =>
+            onNewsLoaded(ApiResponse.error("Unable to Fetch"), healthNewsList));
+    newsRepo
+        .getETNewsFromRepo()
+        .then((value) => onNewsLoaded(ApiResponse.completed(value), etNewsList))
+        .onError((error, stackTrace) =>
+            onNewsLoaded(ApiResponse.error("Unable to Fetch"), etNewsList));
+    newsRepo
+        .getSportsNewsFromRepo()
+        .then((value) =>
+            onNewsLoaded(ApiResponse.completed(value), sportsNewsList))
+        .onError((error, stackTrace) =>
+            onNewsLoaded(ApiResponse.error("Unable to Fetch"), sportsNewsList));
   }
 
   void init() async {
-    fetchUsers();
+    fetchNews();
   }
 
   @override
